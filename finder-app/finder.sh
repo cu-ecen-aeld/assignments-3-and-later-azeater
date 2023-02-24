@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 if [ $# -ne 2 ]; then
 	echo "Please enter a file directory followed by a search string as arguements"
