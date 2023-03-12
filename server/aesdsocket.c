@@ -72,19 +72,9 @@ int main(int argc, char * argv[])
 
 	//setup hints structure
 	memset(&hints, 0, sizeof(hints));
-	hints.ai_family = AF_UNSPEC;
+	hints.ai_family = AF_INET;
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_flags  = AI_PASSIVE;
-
-
-	//create socket
-	sockfd = socket(AF_INET, SOCK_STREAM, 0);
-
-	if (sockfd == -1)
-	{
-		syslog(LOG_ERR, "Could not create socket. Error: %d\n", errno);
-		return -1;
-	}
 	
 	//setup address structures
 	ret = getaddrinfo(NULL, "9000", &hints, &servinfo);
@@ -94,6 +84,15 @@ int main(int argc, char * argv[])
 		return -1;
 	}	
 	
+	//create socket
+        sockfd = socket(servinfo->ai_family, servinfo->ai_socktype, servinfo->ai_protocol);
+
+        if (sockfd == -1)
+        {
+                syslog(LOG_ERR, "Could not create socket. Error: %d\n", errno);
+                return -1;
+        }
+
 	//bind port
 	ret = bind(sockfd, servinfo->ai_addr, sizeof(struct sockaddr));
 
