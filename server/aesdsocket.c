@@ -99,7 +99,7 @@ int main(int argc, char * argv[])
 
 	if (ret != 0)
 	{
-		syslog(LOG_ERR, "bind error:%d\n", ret);
+		syslog(LOG_ERR, "bind error:%s\n", strerror(errno));
 		return -1;
 	}
 	
