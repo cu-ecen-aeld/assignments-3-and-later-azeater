@@ -215,34 +215,6 @@ int main(int argc, char *argv[])
 		syslog(LOG_ERR, "Could not subscribe to SIGINT");
 	}
 
-	//timer setup
-	int clock_id = CLOCK_MONOTONIC;
-	memset(&sev, 0, sizeof(struct sigevent));
-	sev.sigev_notify = SIGEV_THREAD;
-	td.filemutex = &mutex;
-	sev.sigev_value.sival_ptr = &td;
-	sev.sigev_notify_function = timer_thread;
-
-	if (timer_create(clock_id,&sev,&timerid) != 0) 
-	{
-        printf("Error %d (%s) creating timer!\n",errno,strerror(errno));
-    } 
-	else 
-	{
-		struct itimerspec its;
-		struct timespec start_time;
-
-		memset(&its, 0, sizeof(struct itimerspec));
-		its.it_interval.tv_sec = 10;
-		its.it_interval.tv_nsec = 0;
-		clock_gettime(clock_id,&start_time);
-		timespec_add(&its.it_value,&start_time,&its.it_interval);
-		if(timer_settime(timerid, TIMER_ABSTIME, &its, NULL ) != 0) 
-		{
-            printf("Error %d (%s) setting timer\n",errno,strerror(errno));
-        } 
-	}
-
 	// setup hints structure
 	memset(&hints, 0, sizeof(hints));
 	hints.ai_family = AF_INET;
@@ -294,6 +266,34 @@ int main(int argc, char *argv[])
 	{
 		if (fork())
 			exit(EXIT_SUCCESS);
+	}
+
+	//timer setup
+	int clock_id = CLOCK_MONOTONIC;
+	memset(&sev, 0, sizeof(struct sigevent));
+	sev.sigev_notify = SIGEV_THREAD;
+	td.filemutex = &mutex;
+	sev.sigev_value.sival_ptr = &td;
+	sev.sigev_notify_function = timer_thread;
+
+	if (timer_create(clock_id,&sev,&timerid) != 0) 
+	{
+        printf("Error %d (%s) creating timer!\n",errno,strerror(errno));
+    } 
+	else 
+	{
+		struct itimerspec its;
+		struct timespec start_time;
+
+		memset(&its, 0, sizeof(struct itimerspec));
+		its.it_interval.tv_sec = 10;
+		its.it_interval.tv_nsec = 0;
+		clock_gettime(clock_id,&start_time);
+		timespec_add(&its.it_value,&start_time,&its.it_interval);
+		if(timer_settime(timerid, TIMER_ABSTIME, &its, NULL ) != 0) 
+		{
+            printf("Error %d (%s) setting timer\n",errno,strerror(errno));
+        } 
 	}
 
 	while (!interrupt_caught) // Continue to loop until SIGINT or SIGTERM sent
