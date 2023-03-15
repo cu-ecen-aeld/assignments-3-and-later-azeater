@@ -4,6 +4,7 @@ TARGET = aesdsocket
 OBJS := $(SRC:.c=.o)
 CROSS_COMPILE:=
 CC := $(CROSS_COMPILE)gcc
+LDFLAGS := -lpthread -lrt
 
 all: $(TARGET)
 
